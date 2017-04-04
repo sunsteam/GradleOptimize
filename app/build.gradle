@@ -1,0 +1,182 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion rootProject.setup.compileSdk
+    buildToolsVersion rootProject.setup.buildTools
+
+    defaultConfig {
+        minSdkVersion rootProject.setup.minSdk
+        targetSdkVersion rootProject.setup.targetSdk
+        versionCode 1
+        versionName "1.0"
+
+        applicationId "com.yomii.gradleoptimize"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        // 开启 multidex support. 需要buildTools版本大于21.1.0
+        // multidex 会拖慢编译速度，因为需要确定哪些类需要打包到主dex中，以免在程序初始化时没有加载到而奔溃
+        // 因此推荐增加一个devlop flavor 用于在art环境编译开发
+        multiDexEnabled true
+
+    }
+
+    productFlavors { //产品类型 （官网译作产品风味 有点别扭）
+
+        //这个代码块是用来定义产品风格和类型的，可以将有关产品的一些设置覆盖defaultConfig
+        //它和buildTypes的组合统称为构建变体，最终产生flavor 乘 type个变体数量，每个变体都有对应的Task
+        //因此渠道很多的话不建议在这块做多渠道打包，会导致assemble时间特别长，可用美团方案
+
+        demo { //演示开发中的第二代产品新功能 与正式版使用不同applicationId
+            applicationId "com.yomii.gradleoptimize2g"
+            versionCode 2
+            versionName "2.0-demo" //不使用后缀的写法
+        }
+        permissiondemo { //演示第二代产品的permission动态请求效果 要求最低6.0系统
+            applicationId "com.yomii.gradleoptimize2g"
+            applicationIdSuffix ".permission"
+            manifestPlaceholders = [flavor:".permission"]
+            minSdkVersion 23
+            versionCode 2
+            versionName "2.0"
+            versionNameSuffix "-permission" //使用后缀的写法
+        }
+
+        free {  // 免费版产品  限制功能
+            applicationIdSuffix ".free"
+            versionNameSuffix "-free"
+            manifestPlaceholders = [flavor:".free"]
+            buildConfigField "int", "function", "2"
+        }
+        enterprise {  //企业版产品  增强功能
+            applicationIdSuffix ".enterprise"
+            versionNameSuffix "-enterprise"
+            manifestPlaceholders = [flavor:".enterprise"]
+            buildConfigField "int", "function", "3"
+        }
+
+        dev { //开发调试版  用于编译限定在art运行时，有助于优化multidex项目的编译速度
+            minSdkVersion 21
+        }
+    }
+
+    signingConfigs {
+        debug { //使用统一的debug.keystore
+            storeFile file("debug.keystore")
+        }
+        release {
+            File propFile = file('C:/Users/Administrator/.android/signing.properties');
+            if (propFile.exists()) {
+                def Properties props = new Properties()
+                props.load(new FileInputStream(propFile))
+                if (props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
+                        props.containsKey('KEY_ALIAS') && props.containsKey('KEY_PASSWORD')) {
+                    storeFile = file(props['STORE_FILE'])
+                    storePassword = props['STORE_PASSWORD']
+                    keyAlias = props['KEY_ALIAS']
+                    keyPassword = props['KEY_PASSWORD']
+                } else {
+                    android.buildTypes.release.signingConfig = null
+                }
+            } else {
+                android.buildTypes.release.signingConfig = null
+            }
+        }
+    }
+
+    buildTypes { //构建类型  一般定义debug和release即可
+        //关闭内置的没啥用的Crash分析库，提升速度
+        //该库信息可以看 https://docs.fabric.io/android/crashlytics/overview.html
+        ext.enableCrashlytics = false
+
+        debug {
+            minifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.debug
+            //增加.debug后缀与正式版做区别，用途是可以在测试机上同时安装debug版与正式版
+            applicationIdSuffix '.debug'
+            manifestPlaceholders = [buildtype:".debug"]
+        }
+        release {
+            minifyEnabled true
+            zipAlignEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        //假设app的签名发版工作由专人负责，你要打包出一个不签名版本，那么增加如下设置
+//        unsigned { //不签名版本 需要用keyTools手动签名与zipAlign
+//            minifyEnabled true
+//            zipAlignEnabled false
+//            shrinkResources true
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//        }
+    }
+
+//1. Gradle 从上往下顺序读取，所以signingConfig变量定义也要在buildTypes使用之前
+
+//2. Suffix添加的顺序是 applicationId + productavor suffix + buildType suffix
+//   假设是企业版的debug版本，实际applicationId为 com.yomii.gradleoptimize.enterprise.debug
+//   微信回调所用的EntryActivity只取applicationId，不用管Suffix
+
+//3. 适配7.0+的FileProvider时，假设你使用ApplicationId作为Authority，那么即使使用了Suffix也会
+//   由于Authority在手机的唯一性而无法安装，需要使用Manifest占位符
+
+
+    //假设同时compile rxjava1 和rxjava2 ，那么他们会产生重复的rxjava.properties文件，需要如下排除
+    packagingOptions {
+        exclude 'META-INF/rxjava.properties'
+    }
+
+    //开启dataBinding库功能
+    dataBinding{
+        enabled true
+    }
+
+    dexOptions {
+        //开启Libraries预Dex化，该设置会提高增量编译速度，也就是写一点运行一下，但会降低clean project速度
+        //官方推荐在持续集成服务器中关闭此特性
+        preDexLibraries true
+        //同时处理进程数，默认4
+        maxProcessCount 8
+        //最大java堆容量，字面意思，需要注意的是该设置与gradle.properties文件中的org.gradle.jvmargs设置
+        //互有影响，org.gradle.jvmargs的数值必须比javaMaxHeapSize数值最少高512MB，并且如果不设置该值，
+        // org.gradle.jvmargs也最少需要1536m，因为javaMaxHeapSize默认1024m。
+        // javaMaxHeapSize "2048m"  //越大越好，这是官方指南写的 （看你的内存余量而定）
+    }
+
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    testCompile 'junit:junit:4.12'
+    //multidex
+    compile'com.android.support:multidex:1.0.1'
+    //support
+    compile "com.android.support:appcompat-v7:$rootProject.versions.libSupport"
+    compile "com.android.support:recyclerview-v7:$rootProject.versions.libSupport"
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    //网络
+    compile "com.squareup.retrofit2:retrofit:$rootProject.versions.libRetrofit"
+    compile "com.squareup.retrofit2:converter-gson:$rootProject.versions.libRetrofit"
+    compile "com.squareup.retrofit2:adapter-rxjava2:$rootProject.versions.libRetrofit"
+    compile "com.squareup.okhttp3:okhttp:$rootProject.versions.libOkhttp"
+    compile "com.squareup.okhttp3:logging-interceptor:$rootProject.versions.libOkhttp"
+    //rx
+    compile "io.reactivex.rxjava2:rxjava:$rootProject.versions.libRxJava"
+    compile "io.reactivex.rxjava2:rxandroid:$rootProject.versions.libRxJava"
+    compile "com.jakewharton.rxbinding2:rxbinding:$rootProject.versions.libRxBinding"
+    //注入
+    compile "com.jakewharton:butterknife:$rootProject.versions.libButterKnife"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.versions.libButterKnife"
+    //图片
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    //图片裁剪库 https://github.com/crazycodeboy/TakePhoto
+    compile ('com.jph.takephoto:takephoto_library:4.0.3', {
+        //排除其内部依赖库，避免compile rx1
+        exclude module: 'rxjava', group: 'io.reactivex'
+        exclude module: 'rxandroid', group: 'io.reactivex'
+    })
+}
