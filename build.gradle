@@ -3,12 +3,12 @@
 buildscript {
 
     ext {
-        setup = [compileSdk: 25,
-                 buildTools: "25.0.2",
-                 minSdk    : 16,
-                 targetSdk : 25,
+        setup = [compileSdk: 27,
+                 buildTools: "27.0.3",
+                 minSdk    : 17,
+                 targetSdk : 27,
         ]
-        versions = [libSupport    : "25.2.0",
+        versions = [libSupport    : "27.0.2",
                     libButterKnife: "8.5.1",
                     libRxJava     : "2.0.1",
                     libRxBinding  : "2.0.0",
@@ -16,13 +16,12 @@ buildscript {
                     libOkhttp     : "3.6.0"]
     }
 
-
-
     repositories {
+        google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:3.0.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -31,8 +30,16 @@ buildscript {
 
 allprojects {
     repositories {
+        google()
         jcenter()
     }
+
+
+    //这个有点忘了，反正是用来解决字符问题，遇到可以试试
+//    tasks.withType(Javadoc) {
+//        options.addStringOption('Xdoclint:none', '-quiet')
+//        options.addStringOption('encoding', 'UTF-8')
+//    }
 }
 
 task clean(type: Delete) {
