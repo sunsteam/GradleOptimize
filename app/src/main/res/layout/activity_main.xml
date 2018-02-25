@@ -1,19 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingEnd="@dimen/dp_12"
+    android:paddingStart="@dimen/dp_12"
     tools:context="com.yomii.gradleoptimize.MainActivity">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/description"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginBottom="@dimen/dp_12"
+        android:layout_marginTop="@dimen/dp_12"
+        android:gravity="center"
+        android:textColor="#555555"
+        android:textSize="@dimen/sp_13"
+        tools:text="test text" />
 
-</android.support.constraint.ConstraintLayout>
+    <Button
+        android:id="@+id/btn_throw"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_45"
+        android:text="bug throw a exception" />
+
+</LinearLayout>

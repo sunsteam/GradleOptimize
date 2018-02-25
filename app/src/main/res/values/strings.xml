@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">GradleOptimize</string>
+    <string name="throw_in_main">throw a exception for test!</string>
 </resources>

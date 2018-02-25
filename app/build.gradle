@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion rootProject.setup.compileSdk
@@ -29,7 +30,7 @@ android {
     dexOptions {
         //开启Libraries预Dex化，该设置会提高增量编译速度，也就是写一点运行一下，但会降低clean project速度
         //官方推荐在持续集成服务器中关闭此特性，有些库会对这条属性做修改，报冲突的话就注释掉
-        preDexLibraries true
+        //preDexLibraries true
         //同时处理进程数，默认4
         maxProcessCount 8
         //最大java堆容量，字面意思，需要注意的是该设置与gradle.properties文件中的org.gradle.jvmargs设置
@@ -43,28 +44,30 @@ android {
         exclude 'META-INF/rxjava.properties'
     }
 
-    flavorDimensions "demos", "category" // demo,版本类型
+    flavorDimensions "progress", "category" // demo,版本类型
 
     productFlavors { //产品类型
 
         //这个代码块是用来定义产品风格和类型的，可以将有关产品的一些设置覆盖defaultConfig
-        //它和buildTypes的组合统称为构建变体，最终产生flavor 乘 type个变体数量，每个变体都有对应的Task
+        //它和buildTypes的组合统称为构建变体，最终产生dimension^2 * type个变体数量，每个变体都有对应的Task
         //因此渠道很多的话不建议在这块做多渠道打包，会导致assemble时间特别长
 
         demo { //演示开发中的第二代产品新功能,添加后缀以区别正式包
-            dimension "demos"
+            dimension "progress"
             applicationIdSuffix ".demo"
             versionCode 2
             versionName "2.0-demo" //不使用后缀的写法
         }
         permissiondemo { //演示第二代产品的permission动态请求效果 要求最低6.0系统
-            dimension "demos"
+            dimension "progress"
             applicationIdSuffix ".permission"
-            manifestPlaceholders = [flavor: ".permission"]
             minSdkVersion 23
             versionCode 2
             versionName "2.0"
             versionNameSuffix "-permission" //使用后缀的写法
+        }
+        production{
+            dimension "progress"
         }
 
         free {  // 免费版产品  限制功能
@@ -118,6 +121,7 @@ android {
         debug {
             minifyEnabled false
             signingConfig signingConfigs.debug
+            versionNameSuffix "-d"
             //增加.debug后缀与正式版做区别，用途是可以在测试机上同时安装debug版与正式版
             applicationIdSuffix '.debug'
         }
@@ -184,25 +188,17 @@ dependencies {
     implementation "com.android.support:support-v4:$rootProject.versions.libSupport"
     implementation "com.android.support:recyclerview-v7:$rootProject.versions.libSupport"
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    //网络
-    implementation "com.squareup.retrofit2:retrofit:$rootProject.versions.libRetrofit"
-    implementation "com.squareup.retrofit2:converter-gson:$rootProject.versions.libRetrofit"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.versions.libRetrofit"
-    implementation "com.squareup.okhttp3:okhttp:$rootProject.versions.libOkhttp"
-    implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.versions.libOkhttp"
-    //rx
-    implementation "io.reactivex.rxjava2:rxjava:$rootProject.versions.libRxJava"
-    implementation "io.reactivex.rxjava2:rxandroid:$rootProject.versions.libRxJava"
-    implementation "com.jakewharton.rxbinding2:rxbinding:$rootProject.versions.libRxBinding"
-    //注入
-    implementation "com.jakewharton:butterknife:$rootProject.versions.libButterKnife"
-    annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.versions.libButterKnife"
+
     //图片
-    implementation 'com.github.bumptech.glide:glide:3.8.0'
+    implementation 'com.github.bumptech.glide:glide:4.1.1'
     //图片裁剪库 https://github.com/crazycodeboy/TakePhoto
     implementation('com.jph.takephoto:takephoto_library:4.0.3', {
         //排除其内部依赖库，避免compile rx1
         exclude module: 'rxjava', group: 'io.reactivex'
         exclude module: 'rxandroid', group: 'io.reactivex'
     })
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
 }
