@@ -1,0 +1,149 @@
+//https://github.com/shwenzhang/AndResGuard/blob/master/doc/how_to_work.zh-cn.md
+//https://github.com/shwenzhang/AndResGuard/blob/master/README.zh-cn.md
+
+apply plugin: 'AndResGuard'
+
+andResGuard {
+    //mappingFile = file("./app-release-resource_mapping.txt")
+    //保持null，resguardTask.doFirst 中会替换
+    mappingFile = null
+    // 当你使用v2签名的时候，7zip压缩是无法生效的。
+    use7zip = true
+    useSign = true
+    // 打开这个开关，会keep住所有资源的原始路径，只混淆资源的名字
+    keepRoot = false
+    whiteList = [
+            // for your icon
+            "R.mipmap.ic_launcher",
+            // for id
+            "R.id.*",
+            // for fabric
+            "R.string.com.crashlytics.*",
+            // for google-services
+            "R.string.google_app_id",
+            "R.string.gcm_defaultSenderId",
+            "R.string.default_web_client_id",
+            "R.string.ga_trackingId",
+            "R.string.firebase_database_url",
+            "R.string.google_api_key",
+            "R.string.google_crash_reporting_api_key",
+            // for shareSDK
+            "R.string.ssdk*",
+            "R.drawable.ssdk*"
+    ]
+    compressFilePattern = [
+            "*.9.png",
+            "*.png",
+            "*.jpg",
+            "*.jpeg",
+            "*.gif",
+            "resources.arsc"
+    ]
+    sevenzip {
+        artifact = "com.tencent.mm:SevenZip:${ANDRESGUARD_VERSION}"
+        //path = "/usr/local/bin/7za"
+    }
+
+    /**
+     * 可选： 如果不设置则会默认覆盖assemble输出的apk
+     **/
+    finalApkBackupPath = "${buildDir}/outputs/apk/useless.apk"
+
+    /**
+     * 可选: 指定v1签名时生成jar文件的摘要算法
+     * 默认值为“SHA-1”
+     **/
+    digestalg = "SHA-256"
+}
+
+/*66666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666*/
+
+
+def bakPath = project.ext.bakPath
+
+
+project.afterEvaluate {
+    def andResGuardApkSuffix = "andresguard.apk"
+
+    def apkSuffix = "_7zip_aligned_signed.apk"
+
+    /**
+     * bak apk and mapping
+     */
+    android.applicationVariants.all { variant ->
+        /**
+         * task type, you want to bak
+         */
+        String middleFolder = "${variant.flavorName}"
+        String name = variant.name.toLowerCase()
+        String buildType = variant.buildType.name.toLowerCase()
+
+        if (!name.equalsIgnoreCase(buildType) && name.endsWith(buildType)) {
+            name = name - buildType + "-${buildType}"
+        }
+        String filePrefix = "${project.name}-${name}"
+
+        // find resguard task first
+        def resguardTask = project.tasks.findByName("resguard${variant.name.capitalize()}")
+        if (resguardTask == null) {
+            println("resguardTask not found, just return")
+            return
+        }
+
+        def tinkerPatchTask = project.tasks.findByName("tinkerPatch${variant.name.capitalize()}")
+        if (tinkerPatchTask == null) {
+            println("tinkerPatchTask not found, just return")
+            return
+        }
+
+        resguardTask.doFirst {
+            def resMapping = "${bakPath}/${baseApkDir}/${middleFolder}/${filePrefix}-resource_mapping.txt"
+            println("resMapping: $resMapping")
+            File mapping = new File(resMapping)
+            if (mapping.exists()) {
+                println("change resguardTask mapping file to ${resMapping}")
+                project.extensions.andResGuard.mappingFile = file(resMapping)
+            }
+        }
+
+        def resGuardDir = "${buildDir}/outputs/apk/${middleFolder}/${buildType}/AndResGuard_${filePrefix}"
+        def apkPath = """${resGuardDir}/${filePrefix}${apkSuffix}"""
+
+
+        resguardTask.doLast {
+
+            copy {
+                println("copy task running")
+                if (!file(apkPath).exists()) {
+                    /** AndResGuard use the different suffix when apk using v2SignatureSchema **/
+                    apkSuffix = "_aligned_signed.apk"
+                    apkPath = """${resGuardDir}/${filePrefix}${apkSuffix}"""
+                }
+                from apkPath
+                into file("${bakPath}")
+                rename { String fileName ->
+                    fileName.replace("${filePrefix}${apkSuffix}", "${filePrefix}-${andResGuardApkSuffix}")
+                }
+
+                from """${resGuardDir}/resource_mapping_${filePrefix}.txt"""
+                into file("${bakPath}")
+                rename { String fileName ->
+                    fileName.replace("resource_mapping_${filePrefix}.txt", "${filePrefix}-resource_mapping.txt")
+                }
+            }
+        }
+
+        tinkerPatchTask.doFirst {
+
+            println("change tinkerPatchTask buildApkPath to resugurad output ${apkPath}")
+            tinkerPatchTask.buildApkPath = apkPath
+
+            println("change tinkerPatchTask baseApk to ${filePrefix}-${andResGuardApkSuffix}")
+            project.extensions.tinkerPatch.oldApk = "${bakPath}/${baseApkDir}/${middleFolder}/${filePrefix}-${andResGuardApkSuffix}"
+
+        }
+        tinkerPatchTask.dependsOn resguardTask
+
+    }
+
+}

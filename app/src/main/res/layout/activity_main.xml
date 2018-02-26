@@ -26,4 +26,17 @@
         android:layout_height="@dimen/dp_45"
         android:text="bug throw a exception" />
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:contentDescription="@string/app_name"
+            android:layout_width="@dimen/dp_200"
+            android:layout_height="@dimen/dp_200"
+            android:layout_gravity="center"
+            android:src="@drawable/avatar"
+            />
+    </FrameLayout>
+
 </LinearLayout>

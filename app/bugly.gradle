@@ -1,0 +1,16 @@
+//https://bugly.qq.com/docs/
+// need classpath 'com.tencent.bugly:symtabfileuploader:latest.release' in root gradle dependencies
+
+apply plugin: 'bugly'
+
+
+bugly {
+    appId = '03e72b0366' // 注册时分配的App ID
+    appKey = '276e592d-de2b-4047-8986-90fd98a9ddc8' // 注册时分配的App Key
+}
+
+
+dependencies {
+    // 异常上报
+    implementation "com.tencent.bugly:crashreport_upgrade:$versions.bugly"
+}
