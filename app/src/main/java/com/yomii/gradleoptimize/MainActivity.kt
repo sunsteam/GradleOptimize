@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,7 +15,10 @@ class MainActivity : AppCompatActivity() {
         val btnThrow = findViewById<Button?>(R.id.btn_throw)
         val description = "this is version: ${BuildConfig.VERSION_NAME}"
         descriptionTextView?.text = description
-        btnThrow?.setOnClickListener({ throw RuntimeException(getString(R.string.throw_in_main)) })
+        //btnThrow?.setOnClickListener({ throw RuntimeException(getString(R.string.throw_in_main)) })
+        btnThrow?.setOnClickListener({
+            Toast.makeText(applicationContext, R.string.bug_fixed_in_main, Toast.LENGTH_SHORT).show()
+        })
 
     }
 }
