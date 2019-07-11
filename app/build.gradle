@@ -7,7 +7,6 @@ apply from: "tinker.gradle"
 
 android {
     compileSdkVersion setup.compileSdk
-    buildToolsVersion setup.buildTools
 
     defaultConfig {
         minSdkVersion setup.minSdk
