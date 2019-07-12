@@ -6,13 +6,11 @@ import android.content.Context
 import android.content.Intent
 import android.support.multidex.MultiDex
 import android.util.Log
-import com.letv.sarrsdesktop.blockcanaryex.jrt.BlockCanaryEx
-import com.letv.sarrsdesktop.blockcanaryex.jrt.Config
 import com.squareup.leakcanary.LeakCanary
 import com.tencent.bugly.Bugly
 import com.tencent.bugly.beta.Beta
 import com.tencent.bugly.crashreport.CrashReport
-import com.tencent.tinker.loader.app.ApplicationLike
+import com.tencent.tinker.entry.ApplicationLike
 
 /**
  * Application
@@ -31,14 +29,13 @@ class App(application: Application, tinkerFlags: Int, tinkerLoadVerifyFlag: Bool
         Log.i(TAG, "onCreate currentProcessName=" + currentProcessName)
         val application = application
         if (application.packageName == currentProcessName) {
-            BlockCanaryEx.install(Config(application))
             LeakCanary.install(application)
 
             val context: Context = application
-            Bugly.setIsDevelopmentDevice(context, BuildConfig.DEBUG)
+            CrashReport.setIsDevelopmentDevice(context, BuildConfig.DEBUG)
             val strategy = CrashReport.UserStrategy(context)
             strategy.isUploadProcess = !BuildConfig.DEBUG
-            Bugly.init(context, "03e72b0366", BuildConfig.DEBUG, strategy)
+            CrashReport.initCrashReport(context, "03e72b0366", BuildConfig.DEBUG, strategy)
         }
     }
 

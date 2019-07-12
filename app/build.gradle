@@ -12,7 +12,7 @@ android {
         minSdkVersion setup.minSdk
         targetSdkVersion setup.targetSdk
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
 
         applicationId "com.yomii.gradleoptimize"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -87,7 +87,6 @@ android {
                     storePassword = props['STORE_PASSWORD']
                     keyAlias = props['KEY_ALIAS']
                     keyPassword = props['KEY_PASSWORD']
-                    props.load(new FileInputStream(file('../local.properties')))
                     storeFile = file(props['STORE_FILE'])
                 } else {
                     android.buildTypes.release.signingConfig = null
@@ -168,12 +167,12 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     //multiDex
-    implementation 'com.android.support:multidex:1.0.2'
+    implementation 'com.android.support:multidex:1.0.3'
     //support
     api "com.android.support:appcompat-v7:$versions.libSupport"
     implementation "com.android.support:support-v4:$versions.libSupport"
     implementation "com.android.support:recyclerview-v7:$versions.libSupport"
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 }
 
 

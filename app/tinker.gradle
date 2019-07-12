@@ -1,5 +1,9 @@
 //https://github.com/Tencent/tinker/wiki/Tinker-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98#%E6%AF%8F%E6%AC%A1%E7%BC%96%E8%AF%91%E6%88%91%E5%BA%94%E8%AF%A5%E4%BF%9D%E7%95%99%E5%93%AA%E4%BA%9B%E6%96%87%E4%BB%B6%E5%A6%82%E4%BD%95%E5%85%BC%E5%AE%B9andresguard
 
+dependencies {
+    // 指定tinker依赖版本（注：应用升级1.3.5版本起，不再内置tinker）
+    implementation 'com.tencent.tinker:tinker-android-lib:1.9.13'
+}
 
 apply plugin: 'com.tencent.bugly.tinker-support'
 
