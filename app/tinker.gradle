@@ -1,11 +1,10 @@
 //https://github.com/Tencent/tinker/wiki/Tinker-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98#%E6%AF%8F%E6%AC%A1%E7%BC%96%E8%AF%91%E6%88%91%E5%BA%94%E8%AF%A5%E4%BF%9D%E7%95%99%E5%93%AA%E4%BA%9B%E6%96%87%E4%BB%B6%E5%A6%82%E4%BD%95%E5%85%BC%E5%AE%B9andresguard
 
 dependencies {
-    // 指定tinker依赖版本（注：应用升级1.3.5版本起，不再内置tinker）
-    implementation 'com.tencent.tinker:tinker-android-lib:1.9.13'
+    implementation 'com.tencent.tinker:tinker-android-lib:1.9.13.2'
 }
 
-apply plugin: 'com.tencent.bugly.tinker-support'
+apply plugin: 'com.tencent.tinker.patch'
 
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -26,52 +25,6 @@ def pathPrefix = "${bakPath}/${baseApkDir}${flavorDir}"
 //文件名
 def name = "${project.name}${flavorPrefix}-${variantName}"
 
-/**
- * 对于插件各参数的详细解析请参考
- */
-tinkerSupport {
-    // 开启tinker-support插件，默认值true
-    enable = isRelease()
-
-    // 构建基准包和补丁包都要指定不同的tinkerId，并且必须保证唯一性
-    tinkerId = "$outTinkerId"
-
-    // 指定归档目录，默认值为module下tinker目录
-    autoBackupApkDir = "${bakPath}"
-
-    // 编译补丁包时，必需指定基线版本的apk，默认值为空
-    // 如果为空，则表示不是进行补丁包的编译
-    // @{link tinkerPatch.oldApk }
-    baseApk = "${pathPrefix}/${name}.apk"
-
-    // 对应tinker插件applyMapping
-    baseApkProguardMapping = "${pathPrefix}/${name}-mapping.txt"
-
-    // 对应tinker插件applyResourceMapping
-    baseApkResourceMapping = "${pathPrefix}/${name}-R.txt"
-
-    // 构建多渠道补丁时使用
-    buildAllFlavorsDir = "${bakPath}/${baseApkDir}"
-
-    // 是否启用加固模式，默认为false.(tinker-spport 1.0.7起支持）
-    isProtectedApp = true
-
-    // 是否开启反射Application模式
-    enableProxyApplication = false
-
-    // 是否启用覆盖tinkerPatch配置功能，默认值false
-    // 开启后tinkerPatch配置不生效，即无需添加tinkerPatch
-    overrideTinkerPatchConfiguration = true
-}
-
-/**
- * 用于用户在代码中判断tinkerPatch是否被使能
- */
-android {
-    defaultConfig {
-        buildConfigField "boolean", "TINKER_ENABLE", "${tinkerSupport.enable}"
-    }
-}
 
 /**
  * 一般来说,我们无需对下面的参数做任何的修改
@@ -82,7 +35,8 @@ tinkerPatch {
     //是否使用tinker编译，用于兼容开发时instant run模式
     tinkerEnable = isRelease()
 
-    //oldApk ="${pathPrefix}/${name}-andresguard.apk"
+    //编译补丁包时，必需指定基线版本的apk，默认值为空
+    oldApk = "${pathPrefix}/${name}-andresguard.apk"
 
     //在编译的patch可能有风险时，将中断编译。
     ignoreWarning = false
@@ -90,9 +44,29 @@ tinkerPatch {
     //在运行过程中，我们需要验证基准apk包与补丁包的签名是否一致，我们是否需要为你签名。
     useSign = true
 
+    //选填，设置编译输出路径, 默认值 build/outputs/tinkerPatch
+    //outputFolder = build/outputs/tinkerPatch
+
+    buildConfig {
+        // 默认 false, 如果我们有多个dex,编译补丁时可能会由于类的移动导致变更增多。若打开keepDexApply模式，补丁包将根据基准包的类分布来编译。
+        keepDexApply = false
+        // 在 overrideTinkerPatchConfiguration 为 false时， 需要使用下面这行定义 tinkerId
+        tinkerId = "$outTinkerId"
+        // 可选，设置mapping文件，建议保持旧apk的proguard混淆方式
+        applyMapping = "${pathPrefix}/${name}-mapping.txt"
+        // 可选，设置R.txt文件，通过旧apk文件保持ResId的分配
+        applyResourceMapping = "${pathPrefix}/${name}-R.txt"
+        // 是否启用加固模式，默认为false. 打开后只允许加固后的app使用
+        isProtectedApp = false
+        // 是否支持新增非export的Activity
+        supportHotplugComponent = false
+    }
+
     dex {
         dexMode = "jar"
-        pattern = ["classes*.dex"]
+        //需要处理的dex路径 支持*、?通配符，必须使用'/'分割。路径是相对安装包的
+        pattern = ["classes*.dex", "assets/secondary-dex-?.jar"]
+        //定义了加载补丁包时需要的类和不希望被Tinker修改的类,这些类的直接引用类也要加入, 没有就不用填
         loader = []
     }
     lib {
@@ -100,25 +74,30 @@ tinkerPatch {
     }
 
     res {
+        //只有符合条件的资源才会被整合到资源包
         pattern = ["res/*", "r/*", "assets/*", "resources.arsc", "AndroidManifest.xml"]
+        //要忽略的资源
         ignoreChange = []
+        //单位kb, 大于该值会修改资源比较算法用来降低补丁包大小,但增加合成复杂度
         largeModSize = 100
     }
 
     packageConfig {
     }
     sevenZip {
+        //压缩工具版本, 包含了7za工具, 正好和 resguard 版本一致
         zipArtifact = "com.tencent.mm:SevenZip:${ANDRESGUARD_VERSION}"
+        //从系统中指定7za路径, 没有就不用填
         //path = "/usr/local/bin/7za"
     }
-    buildConfig {
-        keepDexApply = false
-        // 在 overrideTinkerPatchConfiguration 为 false时， 需要使用下面这行定义 tinkerId
-        tinkerId = "$outTinkerId"
-        // 可选，设置mapping文件，建议保持旧apk的proguard混淆方式
-        //applyMapping = "${pathPrefix}/${name}-mapping.txt"
-        // 可选，设置R.txt文件，通过旧apk文件保持ResId的分配
-        //applyResourceMapping = "${pathPrefix}/${name}-R.txt"
+}
+
+/**
+ * 用于用户在代码中判断tinkerPatch是否被使能
+ */
+android {
+    defaultConfig {
+        buildConfigField "boolean", "TINKER_ENABLE", "${tinkerPatch.tinkerEnable}"
     }
 }
 

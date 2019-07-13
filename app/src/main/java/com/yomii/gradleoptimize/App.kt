@@ -7,10 +7,11 @@ import android.content.Intent
 import android.support.multidex.MultiDex
 import android.util.Log
 import com.squareup.leakcanary.LeakCanary
-import com.tencent.bugly.Bugly
-import com.tencent.bugly.beta.Beta
 import com.tencent.bugly.crashreport.CrashReport
-import com.tencent.tinker.entry.ApplicationLike
+import com.tencent.tinker.entry.DefaultApplicationLike
+import com.tencent.tinker.lib.tinker.TinkerInstaller
+
+
 
 /**
  * Application
@@ -19,7 +20,7 @@ import com.tencent.tinker.entry.ApplicationLike
  */
 
 class App(application: Application, tinkerFlags: Int, tinkerLoadVerifyFlag: Boolean, applicationStartElapsedTime: Long, applicationStartMillisTime: Long, tinkerResultIntent: Intent)
-    : ApplicationLike(application, tinkerFlags, tinkerLoadVerifyFlag, applicationStartElapsedTime, applicationStartMillisTime, tinkerResultIntent) {
+    : DefaultApplicationLike(application, tinkerFlags, tinkerLoadVerifyFlag, applicationStartElapsedTime, applicationStartMillisTime, tinkerResultIntent) {
 
     private val TAG = "App"
 
@@ -44,7 +45,7 @@ class App(application: Application, tinkerFlags: Int, tinkerLoadVerifyFlag: Bool
         // you must install multiDex whatever tinker is installed!
         MultiDex.install(base)
         // 安装tinker
-        Beta.installTinker(this)
+        TinkerInstaller.install(this)
     }
 
     private fun getCurrentProcessName(): String {

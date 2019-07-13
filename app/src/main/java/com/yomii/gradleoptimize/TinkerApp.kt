@@ -1,5 +1,8 @@
 package com.yomii.gradleoptimize
 
+import com.tencent.tinker.loader.app.TinkerApplication
+import com.tencent.tinker.loader.shareutil.ShareConstants
+
 
 /**
  * Created by Yomii on 2018/2/9.
