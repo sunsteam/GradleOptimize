@@ -1017,7 +1017,31 @@ res id mapping:
     com.yomii.gradleoptimize.R.string.bug_fixed_in_main -> com.yomii.gradleoptimize.R.string.ad
     com.yomii.gradleoptimize.R.string.search_menu_title -> com.yomii.gradleoptimize.R.string.ae
     com.yomii.gradleoptimize.R.string.status_bar_notification_info_overflow -> com.yomii.gradleoptimize.R.string.af
-    com.yomii.gradleoptimize.R.string.throw_in_main -> com.yomii.gradleoptimize.R.string.ag
+    com.yomii.gradleoptimize.R.string.strNetworkTipsCancelBtn -> com.yomii.gradleoptimize.R.string.ag
+    com.yomii.gradleoptimize.R.string.strNetworkTipsConfirmBtn -> com.yomii.gradleoptimize.R.string.ah
+    com.yomii.gradleoptimize.R.string.strNetworkTipsMessage -> com.yomii.gradleoptimize.R.string.ai
+    com.yomii.gradleoptimize.R.string.strNetworkTipsTitle -> com.yomii.gradleoptimize.R.string.aj
+    com.yomii.gradleoptimize.R.string.strNotificationClickToContinue -> com.yomii.gradleoptimize.R.string.ak
+    com.yomii.gradleoptimize.R.string.strNotificationClickToInstall -> com.yomii.gradleoptimize.R.string.al
+    com.yomii.gradleoptimize.R.string.strNotificationClickToRetry -> com.yomii.gradleoptimize.R.string.am
+    com.yomii.gradleoptimize.R.string.strNotificationClickToView -> com.yomii.gradleoptimize.R.string.an
+    com.yomii.gradleoptimize.R.string.strNotificationDownloadError -> com.yomii.gradleoptimize.R.string.ao
+    com.yomii.gradleoptimize.R.string.strNotificationDownloadSucc -> com.yomii.gradleoptimize.R.string.ap
+    com.yomii.gradleoptimize.R.string.strNotificationDownloading -> com.yomii.gradleoptimize.R.string.aq
+    com.yomii.gradleoptimize.R.string.strNotificationHaveNewVersion -> com.yomii.gradleoptimize.R.string.ar
+    com.yomii.gradleoptimize.R.string.strToastCheckUpgradeError -> com.yomii.gradleoptimize.R.string.as
+    com.yomii.gradleoptimize.R.string.strToastCheckingUpgrade -> com.yomii.gradleoptimize.R.string.at
+    com.yomii.gradleoptimize.R.string.strToastYourAreTheLatestVersion -> com.yomii.gradleoptimize.R.string.au
+    com.yomii.gradleoptimize.R.string.strUpgradeDialogCancelBtn -> com.yomii.gradleoptimize.R.string.av
+    com.yomii.gradleoptimize.R.string.strUpgradeDialogContinueBtn -> com.yomii.gradleoptimize.R.string.aw
+    com.yomii.gradleoptimize.R.string.strUpgradeDialogFeatureLabel -> com.yomii.gradleoptimize.R.string.ax
+    com.yomii.gradleoptimize.R.string.strUpgradeDialogFileSizeLabel -> com.yomii.gradleoptimize.R.string.ay
+    com.yomii.gradleoptimize.R.string.strUpgradeDialogInstallBtn -> com.yomii.gradleoptimize.R.string.az
+    com.yomii.gradleoptimize.R.string.strUpgradeDialogRetryBtn -> com.yomii.gradleoptimize.R.string.b0
+    com.yomii.gradleoptimize.R.string.strUpgradeDialogUpdateTimeLabel -> com.yomii.gradleoptimize.R.string.b1
+    com.yomii.gradleoptimize.R.string.strUpgradeDialogUpgradeBtn -> com.yomii.gradleoptimize.R.string.b2
+    com.yomii.gradleoptimize.R.string.strUpgradeDialogVersionLabel -> com.yomii.gradleoptimize.R.string.b3
+    com.yomii.gradleoptimize.R.string.throw_in_main -> com.yomii.gradleoptimize.R.string.b4
     com.yomii.gradleoptimize.R.style.AlertDialog.AppCompat -> com.yomii.gradleoptimize.R.style.a
     com.yomii.gradleoptimize.R.style.AlertDialog.AppCompat.Light -> com.yomii.gradleoptimize.R.style.b
     com.yomii.gradleoptimize.R.style.Animation.AppCompat.Dialog -> com.yomii.gradleoptimize.R.style.c
@@ -1371,3 +1395,4 @@ res id mapping:
     com.yomii.gradleoptimize.R.style.Base.V28.Theme.AppCompat -> com.yomii.gradleoptimize.R.style.ir
     com.yomii.gradleoptimize.R.style.Base.V28.Theme.AppCompat.Light -> com.yomii.gradleoptimize.R.style.is
     com.yomii.gradleoptimize.R.xml.my_provider_paths -> com.yomii.gradleoptimize.R.xml.a
+    com.yomii.gradleoptimize.R.xml.provider_paths -> com.yomii.gradleoptimize.R.xml.b

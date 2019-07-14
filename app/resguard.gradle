@@ -74,7 +74,7 @@ project.afterEvaluate {
         /**
          * task type, you want to bak
          */
-        String middleFolder = "${variant.flavorName}"
+        String flavorName = "${variant.flavorName}"
         String name = variant.name.toLowerCase()
         String buildType = variant.buildType.name.toLowerCase()
 
@@ -90,14 +90,8 @@ project.afterEvaluate {
             return
         }
 
-        def tinkerPatchTask = project.tasks.findByName("tinkerPatch${variant.name.capitalize()}")
-        if (tinkerPatchTask == null) {
-            println("tinkerPatchTask not found, just return")
-            return
-        }
-
         resguardTask.doFirst {
-            def resMapping = "${bakPath}/${baseApkDir}/${middleFolder}/${filePrefix}-resource_mapping.txt"
+            def resMapping = "${bakPath}/${baseApkDir}/${flavorName}/${filePrefix}-resource_mapping.txt"
             println("resMapping: $resMapping")
             File mapping = new File(resMapping)
             if (mapping.exists()) {
@@ -106,7 +100,7 @@ project.afterEvaluate {
             }
         }
 
-        def rawApkDir = """${buildDir}/outputs/apk/${middleFolder}/${buildType}"""
+        def rawApkDir = """${buildDir}/outputs/apk/${flavorName}/${buildType}"""
         def resGuardDir = "${rawApkDir}/AndResGuard_${filePrefix}"
         def apkPath = """${resGuardDir}/${filePrefix}${apkSuffix}"""
 
@@ -154,16 +148,74 @@ project.afterEvaluate {
             }
         }
 
+        def tinkerPatchTask = project.tasks.findByName("tinkerPatch${variant.name.capitalize()}")
+        if (tinkerPatchTask == null) {
+            println("tinkerPatchTask not found, just return")
+            return
+        }
+
         tinkerPatchTask.doFirst {
 
             println("change tinkerPatchTask buildApkPath to resugurad output ${apkPath}")
             tinkerPatchTask.buildApkPath = apkPath
 
             println("change tinkerPatchTask baseApk to ${filePrefix}-${andResGuardApkSuffix}")
-            project.extensions.tinkerPatch.oldApk = "${bakPath}/${baseApkDir}/${middleFolder}/${filePrefix}-${andResGuardApkSuffix}"
+            project.extensions.tinkerPatch.oldApk = "${bakPath}/${baseApkDir}/${flavorName}/${filePrefix}-${andResGuardApkSuffix}"
+
+        }
+
+        tinkerPatchTask.doLast {
+
+            def bakDir = file("${bakPath}/${outTinkerId}")
+            if (bakDir.exists()) {
+                bakDir.deleteDir()
+            }
+
+            bakDir = file("${bakPath}/${baseApkDir}")
+            def patchDir = """${buildDir}/outputs/apk/${flavorName}/tinkerPatch/${buildType}"""
+
+            String patchId = outTinkerId
+            def patchName = patchId.substring(patchId.indexOf('-')+1)
+
+            copy {
+                println("copy patch log to bak")
+
+                from """${patchDir}/log.txt"""
+                into file("${bakDir}")
+                rename { String fileName ->
+                    fileName.replace("log.txt", "${filePrefix}-${patchName}-log.txt")
+                }
+
+                from """${patchDir}/patch_signed.apk"""
+                into file("${bakDir}")
+                rename { String fileName ->
+                    fileName.replace("patch_signed.apk", "${filePrefix}-${patchName}.apk")
+                }
+            }
 
         }
         tinkerPatchTask.dependsOn resguardTask
+
+
+        def tinkerSupportTask = project.tasks.findByName("buildTinkerPatch${variant.name.capitalize()}")
+        if (tinkerSupportTask == null) {
+            println("tinkerSupportTask not found, just return")
+            return
+        }
+
+        tinkerSupportTask.doLast {
+
+            copy {
+                println("copy patch apk to bak")
+
+                from """${buildDir}/outputs/patch/patch_signed.apk"""
+                into file("${bakDir}")
+                rename { String fileName ->
+                    fileName.replace("patch_signed.apk", "${filePrefix}-${patchName}.apk")
+                }
+            }
+
+        }
 
     }
 

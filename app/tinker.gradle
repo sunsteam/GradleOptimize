@@ -4,7 +4,7 @@ dependencies {
     implementation 'com.tencent.tinker:tinker-android-lib:1.9.13.2'
 }
 
-apply plugin: 'com.tencent.tinker.patch'
+apply plugin: 'com.tencent.bugly.tinker-support'
 
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -26,6 +26,49 @@ def pathPrefix = "${bakPath}/${baseApkDir}${flavorDir}"
 def name = "${project.name}${flavorPrefix}-${variantName}"
 
 
+
+
+/**
+ * 对于插件各参数的详细解析请参考
+ */
+tinkerSupport {
+    // 开启tinker-support插件，默认值true
+    enable = isRelease()
+
+    // 构建基准包和补丁包都要指定不同的tinkerId，并且必须保证唯一性
+    tinkerId = "$outTinkerId"
+
+    // 指定归档目录，默认值为module下tinker目录
+    autoBackupApkDir = "${bakPath}"
+
+    // 编译补丁包时，必需指定基线版本的apk，默认值为空
+    // 如果为空，则表示不是进行补丁包的编译
+    // @{link tinkerPatch.oldApk }
+    baseApk = "${pathPrefix}/${name}-andresguard.apk"
+
+    // 对应tinker插件applyMapping
+    baseApkProguardMapping = "${pathPrefix}/${name}-mapping.txt"
+
+    // 对应tinker插件applyResourceMapping
+    baseApkResourceMapping = "${pathPrefix}/${name}-R.txt"
+
+    // 构建多渠道补丁时使用
+    buildAllFlavorsDir = "${bakPath}/${baseApkDir}"
+
+    // 是否启用加固模式，默认为false.(tinker-spport 1.0.7起支持）
+    isProtectedApp = false
+
+    // 是否开启反射Application模式
+    enableProxyApplication = false
+
+    // 是否启用覆盖tinkerPatch配置功能，默认值false
+    // 开启后tinkerPatch配置不生效，即无需添加tinkerPatch
+    overrideTinkerPatchConfiguration = false
+}
+
+
+
+
 /**
  * 一般来说,我们无需对下面的参数做任何的修改
  * 对于各参数的详细介绍请参考:
@@ -33,7 +76,7 @@ def name = "${project.name}${flavorPrefix}-${variantName}"
  */
 tinkerPatch {
     //是否使用tinker编译，用于兼容开发时instant run模式
-    tinkerEnable = isRelease()
+    tinkerEnable = tinkerSupport.enable
 
     //编译补丁包时，必需指定基线版本的apk，默认值为空
     oldApk = "${pathPrefix}/${name}-andresguard.apk"

@@ -492,4 +492,6 @@ public void xxxxxx(**);
 -keep public class com.tencent.bugly.**{*;}
 
 #Tinker
--keep class * implements com.tencent.tinker.entry.ApplicationLike
+-keep class * extends com.tencent.tinker.entry.ApplicationLike
+-dontwarn com.tencent.tinker.**
+-keep class com.tencent.tinker.** { *; }
