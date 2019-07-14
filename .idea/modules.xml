@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/GradleOptimize.iml" filepath="$PROJECT_DIR$/.idea/GradleOptimize.iml" />
-      <module fileurl="file://$PROJECT_DIR$/GradleOptimize.iml" filepath="$PROJECT_DIR$/GradleOptimize.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

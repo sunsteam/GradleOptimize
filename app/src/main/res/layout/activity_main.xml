@@ -10,7 +10,7 @@
     tools:context="com.yomii.gradleoptimize.MainActivity">
 
     <TextView
-        android:id="@+id/description"
+        android:id="@+id/descriptionView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/dp_12"
@@ -21,7 +21,7 @@
         tools:text="test text" />
 
     <Button
-        android:id="@+id/btn_throw"
+        android:id="@+id/btnThrow"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_45"
         android:text="bug throw a exception" />
@@ -35,7 +35,7 @@
             android:layout_width="@dimen/dp_200"
             android:layout_height="@dimen/dp_200"
             android:layout_gravity="center"
-            android:src="@drawable/avatar"
+            android:src="@drawable/state_error_net"
             />
     </FrameLayout>
 

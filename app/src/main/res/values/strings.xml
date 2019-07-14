@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">GradleOptimize</string>
-    <string name="throw_in_main">throw a exception for test!</string>
-    <string name="bug_fixed_in_main">now bug is fixed</string>
+    <string name="throw_in_main">throw a exception for test !</string>
+    <string name="bug_fixed_in_main">patched now bug is fixed</string>
 </resources>

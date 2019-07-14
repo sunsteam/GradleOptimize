@@ -13,6 +13,7 @@ gen/
 # Gradle files
 .gradle/
 build/
+proguardMapping.txt
 
 # Local configuration file (sdk path, etc)
 local.properties

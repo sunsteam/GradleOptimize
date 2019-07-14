@@ -126,7 +126,7 @@
 -keep class com.alipay.android.app.IRemoteServiceCallback$Stub{*;}
 -keep class com.alipay.sdk.app.PayTask{ public *;}
 -keep class com.alipay.sdk.app.AuthTask{ public *;}
--keep public class * extends android.os.IInterface
+-keep public class * implements android.os.IInterface
 #微信支付
 -keep class com.tencent.mm.sdk.openapi.WXMediaMessage {*;}
 -keep class com.tencent.mm.sdk.openapi.** implements com.tencent.mm.sdk.openapi.WXMediaMessage$IMediaObject {*;}
@@ -295,7 +295,7 @@
 
 
 #AndFix
--keep class * extends java.lang.annotation.Annotation
+-keep class * implements java.lang.annotation.Annotation
 -keepclasseswithmembernames class * {
     native <methods>;
 }
@@ -490,3 +490,6 @@ public void xxxxxx(**);
 #Bugly_Report
 -dontwarn com.tencent.bugly.**
 -keep public class com.tencent.bugly.**{*;}
+
+#Tinker
+-keep class * implements com.tencent.tinker.entry.ApplicationLike

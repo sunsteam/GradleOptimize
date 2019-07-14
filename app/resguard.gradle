@@ -106,11 +106,17 @@ project.afterEvaluate {
             }
         }
 
-        def resGuardDir = "${buildDir}/outputs/apk/${middleFolder}/${buildType}/AndResGuard_${filePrefix}"
+        def rawApkDir = """${buildDir}/outputs/apk/${middleFolder}/${buildType}"""
+        def resGuardDir = "${rawApkDir}/AndResGuard_${filePrefix}"
         def apkPath = """${resGuardDir}/${filePrefix}${apkSuffix}"""
 
 
         resguardTask.doLast {
+
+            def bakDir = file("${bakPath}/${outTinkerId}")
+            if (!bakDir.exists()) {
+                bakDir.mkdir()
+            }
 
             copy {
                 println("copy task running")
@@ -120,16 +126,31 @@ project.afterEvaluate {
                     apkPath = """${resGuardDir}/${filePrefix}${apkSuffix}"""
                 }
                 from apkPath
-                into file("${bakPath}")
+                into file("${bakDir}")
                 rename { String fileName ->
                     fileName.replace("${filePrefix}${apkSuffix}", "${filePrefix}-${andResGuardApkSuffix}")
                 }
 
                 from """${resGuardDir}/resource_mapping_${filePrefix}.txt"""
-                into file("${bakPath}")
+                into file("${bakDir}")
                 rename { String fileName ->
                     fileName.replace("resource_mapping_${filePrefix}.txt", "${filePrefix}-resource_mapping.txt")
                 }
+
+                from """${projectDir}/proguardMapping.txt"""
+                into file("${bakDir}")
+                rename { String fileName ->
+                    fileName.replace("proguardMapping.txt", "${filePrefix}-mapping.txt")
+                }
+
+                from """${buildDir}/intermediates/symbols/release/R.txt"""
+                into file("${bakDir}")
+                rename { String fileName ->
+                    fileName.replace("R.txt", "${filePrefix}-R.txt")
+                }
+
+                from """${rawApkDir}/${filePrefix}.apk"""
+                into file("${bakDir}")
             }
         }
 
