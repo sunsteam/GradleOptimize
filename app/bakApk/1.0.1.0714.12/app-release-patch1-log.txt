@@ -1,0 +1,62 @@
+-----------------------Tinker patch begin-----------------------
+configuration: 
+oldApk:/Users/sunpc/StudioProjects/GradleOptimize/app/bakApk/1.0.1.0714.12//app-release-andresguard.apk
+newApk:/Users/sunpc/StudioProjects/GradleOptimize/app/build/outputs/apk//release/AndResGuard_app-release/app-release_7zip_aligned_signed.apk
+outputFolder:/Users/sunpc/StudioProjects/GradleOptimize/app/build/outputs/apk/tinkerPatch/release
+isIgnoreWarning:false
+isProtectedApp:false
+7-ZipPath:/Users/sunpc/.gradle/caches/modules-2/files-2.1/com.tencent.mm/SevenZip/1.2.16/cc390e6c704b74496d9ba0e9b46d2cf8a2a96b84/SevenZip-1.2.16-osx-x86_64.exe
+useSignAPk:true
+package meta fields: 
+dex configs: 
+dexMode: jar
+dexPattern:assets/secondary-dex-.\.jar
+dexPattern:classes.*\.dex
+dex loader:com.yomii.gradleoptimize.TinkerApp
+dex loader:com.tencent.tinker.loader.*
+lib configs: 
+libPattern:lib/.*/.*\.so
+resource configs: 
+resPattern:res/.*
+resPattern:AndroidManifest\.xml
+resPattern:resources\.arsc
+resPattern:assets/.*
+resPattern:r/.*
+largeModSize:100kb
+useApplyResource:true
+
+Analyze old and new apk files:
+old apk: app-release-andresguard.apk, size=2207018, md5=5316b0eec725044ccfa086a258fbe572
+new apk: app-release_7zip_aligned_signed.apk, size=2231686, md5=36dfcdbf71406ea4193cf9fa9a063465
+
+Manifest was changed, while there's no any new components added. Make sure if such changes were all you expected.
+
+UnZipping apk to /Users/sunpc/StudioProjects/GradleOptimize/app/build/outputs/apk/tinkerPatch/release/app-release-andresguard
+UnZipping apk to /Users/sunpc/StudioProjects/GradleOptimize/app/build/outputs/apk/tinkerPatch/release/app-release_7zip_aligned_signed
+Found large modify resource: resources.arsc size:290064
+Found modify resource: r/n/a2.xml
+Found add resource: r/o/bz.jpg
+found modify resource: AndroidManifest.xml, but it is AndroidManifest.xml, just ignore!
+Check for loader classes in dex: classes.dex
+
+Gen classes.dex patch file:/Users/sunpc/StudioProjects/GradleOptimize/app/build/outputs/apk/tinkerPatch/release/tinker_result/classes.dex, size:3262, md5:afdf88a359d2b99f26877dfe964d2c3a
+Verifying if patched new dex is logically the same as original new dex: app-release_7zip_aligned_signed/classes.dex ...
+
+Gen classes.dex for dalvik full dex file:/Users/sunpc/StudioProjects/GradleOptimize/app/build/outputs/apk/tinkerPatch/release/tempPatchedDexes/classes.dex, size:4600812, md5:bdd0241fc205693a0ae08237fe8582ce
+DexDecoder:write meta file data: classes.dex,,bdd0241fc205693a0ae08237fe8582ce,bdd0241fc205693a0ae08237fe8582ce,afdf88a359d2b99f26877dfe964d2c3a,3815208276,2201437301,jar
+
+Add test install result dex: /Users/sunpc/StudioProjects/GradleOptimize/app/build/outputs/apk/tinkerPatch/release/tinker_result/test.dex, size:584
+DexDecoder:write test dex meta file data: test.dex,,56900442eb5b7e1de45449d0685e6e00,56900442eb5b7e1de45449d0685e6e00,0,0,0,jar
+Add Test resource file: assets/only_use_to_test_tinker_resource.txt
+Final normal zip resource: resources_out.zip, size=595503, md5=961b9947706ce4b087a3c9f9e406c921
+Generate unsigned apk: patch_unsigned.apk
+Signing apk: patch_signed.apk
+Signing key algorithm is SHA1withRSA
+Try use 7za to compress the patch file: patch_signed_7zip.apk, will cost much more time
+Current 7za path:/Users/sunpc/.gradle/caches/modules-2/files-2.1/com.tencent.mm/SevenZip/1.2.16/cc390e6c704b74496d9ba0e9b46d2cf8a2a96b84/SevenZip-1.2.16-osx-x86_64.exe
+Result: final signed patch result: /Users/sunpc/StudioProjects/GradleOptimize/app/build/outputs/apk/tinkerPatch/release/patch_signed.apk, size=35293
+Result: final signed with 7zip patch result: /Users/sunpc/StudioProjects/GradleOptimize/app/build/outputs/apk/tinkerPatch/release/patch_signed_7zip.apk, size=35966
+Warning: patch_signed_7zip.apk is bigger than patch_signed.apk 673 byte, you should choose patch_signed.apk at these time!
+Tinker patch done, total time cost: 2.200000s
+Tinker patch done, you can go to file to find the output /Users/sunpc/StudioProjects/GradleOptimize/app/build/outputs/apk/tinkerPatch/release
+-----------------------Tinker patch end-------------------------

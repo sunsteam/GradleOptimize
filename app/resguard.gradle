@@ -103,11 +103,10 @@ project.afterEvaluate {
         def rawApkDir = """${buildDir}/outputs/apk/${flavorName}/${buildType}"""
         def resGuardDir = "${rawApkDir}/AndResGuard_${filePrefix}"
         def apkPath = """${resGuardDir}/${filePrefix}${apkSuffix}"""
-
+        def bakDir = file("${bakPath}/${outTinkerId}")
 
         resguardTask.doLast {
 
-            def bakDir = file("${bakPath}/${outTinkerId}")
             if (!bakDir.exists()) {
                 bakDir.mkdir()
             }
@@ -154,6 +153,11 @@ project.afterEvaluate {
             return
         }
 
+        def patchDir = """${buildDir}/outputs/apk/${flavorName}/tinkerPatch/${buildType}"""
+
+        String patchId = outTinkerId
+        def patchName = patchId.substring(patchId.indexOf('-')+1)
+
         tinkerPatchTask.doFirst {
 
             println("change tinkerPatchTask buildApkPath to resugurad output ${apkPath}")
@@ -166,16 +170,11 @@ project.afterEvaluate {
 
         tinkerPatchTask.doLast {
 
-            def bakDir = file("${bakPath}/${outTinkerId}")
             if (bakDir.exists()) {
                 bakDir.deleteDir()
             }
 
             bakDir = file("${bakPath}/${baseApkDir}")
-            def patchDir = """${buildDir}/outputs/apk/${flavorName}/tinkerPatch/${buildType}"""
-
-            String patchId = outTinkerId
-            def patchName = patchId.substring(patchId.indexOf('-')+1)
 
             copy {
                 println("copy patch log to bak")
@@ -184,12 +183,6 @@ project.afterEvaluate {
                 into file("${bakDir}")
                 rename { String fileName ->
                     fileName.replace("log.txt", "${filePrefix}-${patchName}-log.txt")
-                }
-
-                from """${patchDir}/patch_signed.apk"""
-                into file("${bakDir}")
-                rename { String fileName ->
-                    fileName.replace("patch_signed.apk", "${filePrefix}-${patchName}.apk")
                 }
             }
 
@@ -208,7 +201,7 @@ project.afterEvaluate {
             copy {
                 println("copy patch apk to bak")
 
-                from """${buildDir}/outputs/patch/patch_signed.apk"""
+                from """${buildDir}/outputs/patch/${buildType}/patch_signed.apk"""
                 into file("${bakDir}")
                 rename { String fileName ->
                     fileName.replace("patch_signed.apk", "${filePrefix}-${patchName}.apk")

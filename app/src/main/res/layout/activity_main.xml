@@ -35,7 +35,7 @@
             android:layout_width="@dimen/dp_200"
             android:layout_height="@dimen/dp_200"
             android:layout_gravity="center"
-            android:src="@drawable/state_error_net"
+            android:src="@drawable/avatar"
             />
     </FrameLayout>
 
