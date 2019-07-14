@@ -156,7 +156,7 @@ project.afterEvaluate {
         def patchDir = """${buildDir}/outputs/apk/${flavorName}/tinkerPatch/${buildType}"""
 
         String patchId = outTinkerId
-        def patchName = patchId.substring(patchId.indexOf('-')+1)
+        def patchName = patchId.substring(patchId.indexOf('-') + 1)
 
         tinkerPatchTask.doFirst {
 

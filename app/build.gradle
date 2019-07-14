@@ -12,8 +12,8 @@ android {
     defaultConfig {
         minSdkVersion setup.minSdk
         targetSdkVersion setup.targetSdk
-        versionCode 2
-        versionName "1.0.1"
+        versionCode 3
+        versionName "1.0.2"
 
         applicationId "com.yomii.gradleoptimize"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -27,9 +27,9 @@ android {
     }
 
     //开启dataBinding库功能
-    dataBinding {
-        enabled true
-    }
+//    dataBinding {
+//        enabled true
+//    }
 
     dexOptions {
         //开启Libraries预Dex化，该设置会提高增量编译速度，也就是写一点运行一下，但会降低clean project速度
@@ -50,26 +50,27 @@ android {
 
     flavorDimensions "category" //根据功能完整度
 
-//    productFlavors { //产品类型
-//
-//        //这个代码块是用来定义产品风格和类型的，可以将有关产品的一些设置覆盖defaultConfig
-//        //它和buildTypes的组合统称为构建变体，最终产生dimension^2 * type个变体数量，每个变体都有对应的Task
-//        //因此渠道很多的话不建议在这块做多渠道打包，会导致assemble时间特别长
-//
-//        free {  // 免费版产品  限制功能
-//            dimension "category"
-//            applicationIdSuffix ".free"
-//            versionNameSuffix "-free"
-//            //在BuildConfig类中创建一个可被java代码读取的属性
-//            buildConfigField "int", "function", "2"
-//        }
-//        enterprise {  //企业版产品  增强功能
-//            dimension "category"
-//            applicationIdSuffix ".enterprise"
-//            versionNameSuffix "-enterprise"
-//            buildConfigField "int", "function", "3"
-//        }
-//    }
+    //产品类型
+    productFlavors {
+
+        //这个代码块是用来定义产品风格和类型的，可以将有关产品的一些设置覆盖defaultConfig
+        //它和buildTypes的组合统称为构建变体，最终产生dimension^2 * type个变体数量，每个变体都有对应的Task
+        //因此渠道很多的话不建议在这块做多渠道打包，会导致assemble时间特别长
+
+        free {  // 免费版产品  限制功能
+            dimension "category"
+            applicationIdSuffix ".free"
+            versionNameSuffix "-free"
+            //在BuildConfig类中创建一个可被java代码读取的属性
+            buildConfigField "int", "function", "2"
+        }
+        enterprise {  //企业版产品  增强功能
+            dimension "category"
+            applicationIdSuffix ".enterprise"
+            versionNameSuffix "-enterprise"
+            buildConfigField "int", "function", "3"
+        }
+    }
 
     signingConfigs {
         debug { //使用统一的debug.keystore，防止不同机器编译安装apk的key不同
@@ -157,7 +158,7 @@ dependencies {
     *
     *       这时 A 能只编译，不引用，因为依赖 A 的 module 也配置了这个依赖
     *
-    * apk：不编译，只把依赖加进代码，这个我也没用过，可能动态加载时候需要用到
+    * runtime：不编译，只把依赖加进代码，这个我也没用过，可能动态加载时候需要用到
     *
     * */
 

@@ -7,6 +7,7 @@ apply plugin: 'bugly'
 bugly {
     appId = '03e72b0366' // 注册时分配的App ID
     appKey = '276e592d-de2b-4047-8986-90fd98a9ddc8' // 注册时分配的App Key
+    upload = true
 }
 
 
